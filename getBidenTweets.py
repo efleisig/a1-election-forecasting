@@ -13,10 +13,12 @@ api = tweepy.API(auth,
                  retry_errors=HTTP_RETRY_ERRORS,
                  wait_on_rate_limit_notify=True)
 query = "Joe Biden"
-outputFile = "bidenTweets.txt"
+excludedWords = ["Trump", "Donald"]
+outputFile = "bidenTweets_10_30_1232.txt"
 
 bidenStreamListener = StreamListener(name="bidenStream",
                                      outputFile=outputFile,
-                                     maxTweets=10)
+                                     maxTweets=10000,
+                                     excludedWords=excludedWords)
 bidenStream = tweepy.Stream(auth=api.auth, listener=bidenStreamListener)
 bidenStream.filter(track=[query])
