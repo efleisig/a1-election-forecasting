@@ -2,3 +2,5 @@ config.py
 
 /biden_tweets
 /trump_tweets
+
+*.pyc
