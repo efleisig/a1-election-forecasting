@@ -103,32 +103,60 @@ def extract_place(status):
 class TrumpStreamListener(StreamListener):
     
     def on_status(self, status):
+        tweet = status._json
+
+        # Check that the tweet doesn't contain any of the excluded words
+        if self.has_words(tweet["text"], self.excludedWords):
+            return True
+
+        # Some tweets contain the full (extended) text
+        elif ("extended_tweet" in tweet and "full_text" in tweet["extended_tweet"] and
+             self.has_words(tweet["extended_tweet"]["full_text"], self.excludedWords)):
+            return True
+        
         place = extract_place(status)
+
         if place is None:
-            return status
-        if place.lower() in states.keys() or place.lower() in states.values():
-            print 'Trump: ' + place
-            outputFile = trumpOutputFileFormat.format(state=place.lower(), date=datetime.today().strftime('%Y-%m-%d'))
-            outputFile = os.path.join(THIS_FOLDER, 'trump_tweets/' + outputFile)
-            with open(outputFile, 'a') as tf:
-                tf.write(json.dumps(status._json))
-                tf.write('\n')
-            return status
+            return True
+        if not place.lower() in states.keys() and not place.lower() in states.values():
+            return True
+
+        print 'Trump: ' + place
+        outputFile = trumpOutputFileFormat.format(state=place.lower(), date=datetime.today().strftime('%Y-%m-%d'))
+        outputFile = os.path.join(THIS_FOLDER, 'trump_tweets/' + outputFile)
+        with open(outputFile, 'a') as tf:
+            tf.write(json.dumps(status._json))
+            tf.write('\n')
+        return True
 
 class BidenStreamListener(StreamListener):
     
     def on_status(self, status):
+        tweet = status._json
+
+        # Check that the tweet doesn't contain any of the excluded words
+        if self.has_words(tweet["text"], self.excludedWords):
+            return True
+
+        # Some tweets contain the full (extended) text
+        elif ("extended_tweet" in tweet and "full_text" in tweet["extended_tweet"] and
+             self.has_words(tweet["extended_tweet"]["full_text"], self.excludedWords)):
+            return True
+        
         place = extract_place(status)
+
         if place is None:
-            return status
-        if place.lower() in states.keys() or place.lower() in states.values():
-            print 'Biden: ' + place
-            outputFile = bidenOutputFileFormat.format(state=place.lower(), date=datetime.today().strftime('%Y-%m-%d'))
-            outputFile = os.path.join(THIS_FOLDER, 'biden_tweets/' + outputFile)
-            with open(outputFile, 'a') as tf:
-                tf.write(json.dumps(status._json))
-                tf.write('\n')
-            return status
+            return True
+        if not place.lower() in states.keys() and not place.lower() in states.values():
+            return True
+
+        print 'Biden: ' + place
+        outputFile = bidenOutputFileFormat.format(state=place.lower(), date=datetime.today().strftime('%Y-%m-%d'))
+        outputFile = os.path.join(THIS_FOLDER, 'biden_tweets/' + outputFile)
+        with open(outputFile, 'a') as tf:
+            tf.write(json.dumps(status._json))
+            tf.write('\n')
+        return True
 
 bidenStreamListener = BidenStreamListener(name="BidenStream",
         maxTweets=10000,
